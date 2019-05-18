@@ -1,6 +1,7 @@
 package AppleMac;
 
 
+import cucumber.api.Scenario;
 import cucumber.api.java.After;
 import cucumber.api.java.Before;
 
@@ -21,9 +22,11 @@ public class Hooks extends Utils {
 
     //A method under @After will be invoked after a scenario is completed
     @After
-
-    public void tearDownBrowser() {
-
-         driver.quit();
+    public void tearDown(Scenario scenario) {
+        if (scenario.isFailed())
+        {
+            Utils.screenshotOfTheBrowserUsingCucumber(scenario);
+        }
+        driver.close();
     }
 }

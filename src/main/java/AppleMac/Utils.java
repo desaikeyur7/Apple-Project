@@ -1,10 +1,18 @@
 package AppleMac;
 
+import cucumber.api.Scenario;
 import org.junit.Assert;
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import static org.apache.commons.io.FileUtils.copyFile;
 
 
 public class Utils extends BasePage {
@@ -136,6 +144,29 @@ public class Utils extends BasePage {
                 System.out.println("Title Matched");
             else
                 System.out.println("Title didn't match");
+    }
+
+    //Cucumber screenshot method
+    public static void screenshotOfTheBrowserUsingCucumber(Scenario scenario)
+    {
+        String timeStamp = new SimpleDateFormat("dd.MM.yy.HH.mm.ss").format(new Date());
+        String screenshotName = scenario.getName().replaceAll("[.,;:?!]", "")+timeStamp+".png";
+        try
+        {
+            //This takes a screenshot from the driver at save it to the specified location
+            File sourcePath = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
+            //Building up the destination path for the screenshot to save
+            //Also make sure to create a folder 'screenshots' within the cucumber-reports folder
+            File destinationPath = new File(System.getProperty("user.dir")+
+                    "/target/cucumber-reports/extent-reports/screenshots/"+screenshotName+".png");
+            //Copy taken screenshot from source location to the destination location
+            copyFile(sourcePath,destinationPath );
+            scenario.write("!!-----------.......Scenario Failed......----------!! Please see attached screenshot for the error/issue");
+            //attach the screenshot to our report
+            scenario.embed(((TakesScreenshot)driver).getScreenshotAs(OutputType.BYTES),"image/png");
+        }catch(IOException e){
+            e.printStackTrace();
+        }
     }
 }
 
